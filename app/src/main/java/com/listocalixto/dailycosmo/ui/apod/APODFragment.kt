@@ -2,21 +2,20 @@ package com.listocalixto.dailycosmo.ui.apod
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.core.Result
+import com.listocalixto.dailycosmo.data.local.AppDatabase
+import com.listocalixto.dailycosmo.data.local.LocalAPODDataSource
 import com.listocalixto.dailycosmo.data.model.APOD
-import com.listocalixto.dailycosmo.data.remote.apod.APODDataSource
+import com.listocalixto.dailycosmo.data.remote.apod.RemoteAPODDataSource
 import com.listocalixto.dailycosmo.databinding.FragmentApodBinding
 import com.listocalixto.dailycosmo.presentation.apod.APODViewModel
 import com.listocalixto.dailycosmo.presentation.apod.APODViewModelFactory
@@ -28,11 +27,18 @@ import java.util.*
 
 class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickListener {
 
-    private lateinit var binding: FragmentApodBinding
-    private var limit = 0
-
     @SuppressLint("SimpleDateFormat")
     private val sdf = SimpleDateFormat("yyyy-MM-dd")
+    private val viewModel by viewModels<APODViewModel> {
+        APODViewModelFactory(
+            APODRepositoryImpl(
+                RemoteAPODDataSource(RetrofitClient.webservice),
+                LocalAPODDataSource(AppDatabase.getDatabase(requireContext()).apodDao())
+            )
+        )
+    }
+
+    private var isLoading = false
     private var endDate: Calendar = Calendar.getInstance()
     private var startDate: Calendar = Calendar.getInstance().apply {
         set(
@@ -43,69 +49,25 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
         add(Calendar.DATE, -10)
     }
 
-    private var isLoading = false
+    private lateinit var binding: FragmentApodBinding
+    private lateinit var dataStoreViewModel: DataStoreViewModel
     private lateinit var adapter: APODAdapter
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var newEndDate: Calendar
     private lateinit var newStartDate: Calendar
-    private lateinit var results: List<APOD>
-    private lateinit var newResults: List<APOD>
-
-    private val viewModel by viewModels<APODViewModel> {
-        APODViewModelFactory(
-            APODRepositoryImpl(
-                APODDataSource(RetrofitClient.webservice)
-            )
-        )
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentApodBinding.bind(view)
-
         layoutManager = LinearLayoutManager(context)
         binding.rvApod.layoutManager = layoutManager
 
-        getResults(endDate, startDate)
+        dataStoreViewModel =
+            ViewModelProvider(requireActivity()).get(DataStoreViewModel::class.java)
 
+        getResults(sdf.format(endDate.time), sdf.format(startDate.time))
+        readDataStore()
 
-        /*activity?.findViewById<NestedScrollView>(R.id.scrollView_main)
-            ?.setOnScrollChangeListener { v, _, scrollY, _, _ ->
-                if (scrollY == (activity?.findViewById<NestedScrollView>(R.id.scrollView_main)
-                        ?.getChildAt(0)?.measuredHeight?.minus(
-                            v.measuredHeight
-                        ))
-                ) {
-                    val visibleItemCount = layoutManager.childCount
-                    val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
-                    val total = adapter.itemCount
-
-                    if (!isLoading) {
-                        if ((visibleItemCount + pastVisibleItem) >= total) {
-
-                            newEndDate = Calendar.getInstance().apply {
-                                set(
-                                    startDate.get(Calendar.YEAR),
-                                    startDate.get(Calendar.MONTH),
-                                    startDate.get(Calendar.DATE)
-                                )
-                                add(Calendar.DATE, -1)
-                            }
-
-                            newStartDate = Calendar.getInstance().apply {
-                                set(
-                                    startDate.get(Calendar.YEAR),
-                                    startDate.get(Calendar.MONTH),
-                                    startDate.get(Calendar.DATE)
-                                )
-                                add(Calendar.DATE, -10)
-                            }
-                            startDate = newStartDate
-                            getResults(newEndDate, newStartDate)
-                        }
-                    }
-                }
-            }*/
         binding.rvApod.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -113,29 +75,10 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
                     val visibleItemCount = layoutManager.childCount
                     val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
                     val total = adapter.itemCount
-
                     if (!isLoading) {
                         if ((visibleItemCount + pastVisibleItem) >= total) {
-
-                            newEndDate = Calendar.getInstance().apply {
-                                set(
-                                    startDate.get(Calendar.YEAR),
-                                    startDate.get(Calendar.MONTH),
-                                    startDate.get(Calendar.DATE)
-                                )
-                                add(Calendar.DATE, -1)
-                            }
-
-                            newStartDate = Calendar.getInstance().apply {
-                                set(
-                                    startDate.get(Calendar.YEAR),
-                                    startDate.get(Calendar.MONTH),
-                                    startDate.get(Calendar.DATE)
-                                )
-                                add(Calendar.DATE, -10)
-                            }
-                            startDate = newStartDate
-                            getResults(newEndDate, newStartDate)
+                            initNewDates()
+                            getResults(sdf.format(newEndDate.time), sdf.format(newStartDate.time))
                         }
                     }
                 }
@@ -143,10 +86,35 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
         })
     }
 
-    private fun getResults(end: Calendar, start: Calendar) {
+    private fun readDataStore() {
+        dataStoreViewModel.readFromDataStore.observe(viewLifecycleOwner, {
+            startDate.time = sdf.parse(it)!!
+        })
+    }
+
+    private fun initNewDates() {
+        newEndDate = Calendar.getInstance().apply {
+            set(
+                startDate.get(Calendar.YEAR),
+                startDate.get(Calendar.MONTH),
+                startDate.get(Calendar.DATE)
+            )
+            add(Calendar.DATE, -1)
+        }
+        newStartDate = Calendar.getInstance().apply {
+            set(
+                startDate.get(Calendar.YEAR),
+                startDate.get(Calendar.MONTH),
+                startDate.get(Calendar.DATE)
+            )
+            add(Calendar.DATE, -10)
+        }
+    }
+
+    private fun getResults(end: String, start: String) {
         isLoading = true
-        viewModel.fetchAPODResults(sdf.format(end.time), sdf.format(start.time))
-            .observe(viewLifecycleOwner, Observer { result ->
+        viewModel.fetchAPODResults(end, start)
+            .observe(viewLifecycleOwner,{ result ->
                 when (result) {
                     is Result.Loading -> {
                         if (!::adapter.isInitialized) {
@@ -159,18 +127,16 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
                     }
                     is Result.Success -> {
                         if (::adapter.isInitialized) {
-                            newResults = result.data.asReversed()
-                            results = results.plus(newResults)
-                            adapter.setData(results)
+                            adapter.setData(result.data)
                             binding.pbMoreResults.visibility = View.GONE
+                            dataStoreViewModel.saveToDataStore(newStartDate)
                         } else {
                             binding.pbRvAPOD.visibility = View.GONE
-                            results = result.data.asReversed()
-                            adapter = APODAdapter(results, this@APODFragment)
+                            adapter = APODAdapter(result.data, this@APODFragment)
                             binding.rvApod.adapter = adapter
                         }
                         isLoading = false
-                        Log.d("ViewModel", "Resultados: ${result.data}")
+                        Log.d("ViewModel", "Results: ${result.data}")
                     }
                     is Result.Failure -> {
                         Log.d("ViewModel", "${result.exception}")
@@ -180,6 +146,6 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     }
 
     override fun onAPODClick(apod: APOD) {
-        Toast.makeText(context, "Presionaste ${apod.title}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "Title: ${apod.title}", Toast.LENGTH_SHORT).show()
     }
 }

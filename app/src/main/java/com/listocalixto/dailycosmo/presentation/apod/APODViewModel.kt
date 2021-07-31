@@ -23,6 +23,7 @@ class APODViewModel(private val repo: APODRepository) : ViewModel() {
             emit(Result.Failure(e))
         }
     }
+
 }
 
 class APODViewModelFactory(private val repo: APODRepository): ViewModelProvider.Factory {
