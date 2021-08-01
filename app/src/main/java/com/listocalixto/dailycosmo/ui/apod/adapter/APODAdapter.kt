@@ -55,11 +55,6 @@ class APODAdapter(
             Glide.with(context).load(item.hdurl).centerCrop().into(binding.imageItemAPOD)
             binding.apply {
                 titleItemAPOD.text = item.title
-                if (item.explanation.isEmpty()) {
-                    descriptionItemAPOD.visibility = View.GONE
-                } else {
-                    descriptionItemAPOD.text = item.explanation
-                }
                 dateItemAPOD.text = item.date
             }
         }

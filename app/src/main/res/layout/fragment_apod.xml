@@ -14,9 +14,11 @@
         android:orientation="vertical"
         android:paddingTop="@dimen/_8sdp"
         android:paddingBottom="@dimen/_8sdp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
         app:layout_constraintBottom_toTopOf="@+id/pb_moreResults"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_apod" />
 
     <ProgressBar
         android:id="@+id/pb_moreResults"

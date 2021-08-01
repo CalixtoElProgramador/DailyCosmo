@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.core.Result
 import com.listocalixto.dailycosmo.data.local.AppDatabase
@@ -52,14 +54,14 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     private lateinit var binding: FragmentApodBinding
     private lateinit var dataStoreViewModel: DataStoreViewModel
     private lateinit var adapter: APODAdapter
-    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var layoutManager: StaggeredGridLayoutManager
     private lateinit var newEndDate: Calendar
     private lateinit var newStartDate: Calendar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentApodBinding.bind(view)
-        layoutManager = LinearLayoutManager(context)
+        layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.rvApod.layoutManager = layoutManager
 
         dataStoreViewModel =
@@ -73,10 +75,11 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0) {
                     val visibleItemCount = layoutManager.childCount
-                    val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    val pastVisibleItem =
+                        layoutManager.findFirstCompletelyVisibleItemPositions(null)
                     val total = adapter.itemCount
                     if (!isLoading) {
-                        if ((visibleItemCount + pastVisibleItem) >= total) {
+                        if ((visibleItemCount + pastVisibleItem[pastVisibleItem.lastIndex]) >= total) {
                             initNewDates()
                             getResults(sdf.format(newEndDate.time), sdf.format(newStartDate.time))
                         }
@@ -114,7 +117,7 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     private fun getResults(end: String, start: String) {
         isLoading = true
         viewModel.fetchAPODResults(end, start)
-            .observe(viewLifecycleOwner,{ result ->
+            .observe(viewLifecycleOwner, { result ->
                 when (result) {
                     is Result.Loading -> {
                         if (!::adapter.isInitialized) {
@@ -146,6 +149,16 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     }
 
     override fun onAPODClick(apod: APOD) {
-        Toast.makeText(context, "Title: ${apod.title}", Toast.LENGTH_SHORT).show()
+        val action = APODFragmentDirections.actionAPODFragmentToAPODDetailsActivity2(
+            apod.copyright,
+            apod.date,
+            apod.explanation,
+            apod.hdurl,
+            apod.media_type,
+            apod.title,
+            apod.url
+        )
+        findNavController().navigate(action)
+
     }
 }
