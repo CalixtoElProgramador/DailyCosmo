@@ -116,4 +116,7 @@ dependencies {
     // Ken Burns View - For Ken Burns Effect
     implementation 'com.flaviofaria:kenburnsview:1.0.7'
 
+    //PhotoView
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
 }

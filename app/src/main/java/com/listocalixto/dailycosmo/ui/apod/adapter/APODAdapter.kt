@@ -52,7 +52,13 @@ class APODAdapter(
     private inner class APODViewHolder(val binding: ItemApodBinding, val context: Context) :
         BaseViewHolder<APOD>(binding.root) {
         override fun bind(item: APOD) {
-            Glide.with(context).load(item.hdurl).centerCrop().into(binding.imageItemAPOD)
+
+            if (item.hdurl.isEmpty()) {
+                Glide.with(context).load(item.url).into(binding.imageItemAPOD)
+            } else {
+                Glide.with(context).load(item.hdurl).into(binding.imageItemAPOD)
+            }
+
             binding.apply {
                 titleItemAPOD.text = item.title
                 dateItemAPOD.text = item.date

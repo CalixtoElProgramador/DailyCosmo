@@ -20,6 +20,13 @@
             app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
             app:statusBarScrim="?attr/colorPrimaryVariant">
 
+            <ProgressBar
+                android:id="@+id/pb_imageDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="visible" />
+
             <ImageView
                 android:id="@+id/img_apodPicture"
                 android:layout_width="match_parent"
