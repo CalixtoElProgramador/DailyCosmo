@@ -7,13 +7,17 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.transition.Hold
+import com.google.android.material.transition.MaterialElevationScale
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.core.Result
 import com.listocalixto.dailycosmo.data.local.AppDatabase
@@ -21,6 +25,7 @@ import com.listocalixto.dailycosmo.data.local.LocalAPODDataSource
 import com.listocalixto.dailycosmo.data.model.APOD
 import com.listocalixto.dailycosmo.data.remote.apod.RemoteAPODDataSource
 import com.listocalixto.dailycosmo.databinding.FragmentApodBinding
+import com.listocalixto.dailycosmo.databinding.ItemApodBinding
 import com.listocalixto.dailycosmo.presentation.apod.APODViewModel
 import com.listocalixto.dailycosmo.presentation.apod.APODViewModelFactory
 import com.listocalixto.dailycosmo.repository.apod.APODRepositoryImpl
@@ -59,6 +64,13 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     private lateinit var layoutManager: StaggeredGridLayoutManager
     private lateinit var newEndDate: Calendar
     private lateinit var newStartDate: Calendar
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        //exitTransition = Hold()
+        //exitTransition = MaterialElevationScale(/* growing= */ false)
+        //reenterTransition = MaterialElevationScale(/* growing= */ true)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -166,7 +178,8 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
             })
     }
 
-    override fun onAPODClick(apod: APOD) {
+    override fun onAPODClick(apod: APOD, binding: ItemApodBinding) {
+        //val extras = FragmentNavigatorExtras(binding.imageItemAPOD to "shared_element")
         val action = APODFragmentDirections.actionAPODFragmentToAPODDetailsFragment2(
             apod.copyright,
             apod.date,
@@ -176,7 +189,6 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
             apod.title,
             apod.url
         )
-        findNavController().navigate(action)
-
+        findNavController().navigate(action /*extras*/)
     }
 }

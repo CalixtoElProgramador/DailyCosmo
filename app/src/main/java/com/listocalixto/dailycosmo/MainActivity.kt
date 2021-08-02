@@ -24,12 +24,17 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         binding.bottomNavigation.setupWithNavController(navController)
+        observeDestinationChange(navController)
     }
 
     private fun observeDestinationChange(navController: NavController) {
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             when (destination.id) {
-                R.id.APODFragment -> {
+                R.id.APODImageFragment -> {
+                    binding.bottomNavigation.visibility = View.GONE
+                }
+                else -> {
+                    binding.bottomNavigation.visibility = View.VISIBLE
                 }
             }
         }

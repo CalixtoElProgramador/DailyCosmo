@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.databinding.FragmentApodImageBinding
@@ -29,23 +30,26 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
     private lateinit var binding: FragmentApodImageBinding
     private var drawable: BitmapDrawable? = null
     private var bitmap: Bitmap? = null
-    private var hdurl: String? = ""
-    private var url: String? = ""
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*private var hdurl: String? = ""
+    private var url: String? = ""*/
+
+    private val args by navArgs<APODImageFragmentArgs>()
+
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hdurl = requireArguments().getString(HDURL)
         url = requireArguments().getString(URL)
-    }
+    }*/
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentApodImageBinding.bind(view)
 
-        if (hdurl.isNullOrEmpty()) {
-            Glide.with(requireContext()).load(url).into(binding.photoView)
+        if (args.hdurl.isEmpty()) {
+            Glide.with(requireContext()).load(args.url).into(binding.photoView)
         } else {
-            Glide.with(requireContext()).load(hdurl).into(binding.photoView)
+            Glide.with(requireContext()).load(args.hdurl).into(binding.photoView)
         }
 
         binding.btnBack.setOnClickListener {
@@ -111,7 +115,7 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val resolver: ContentResolver = requireActivity().contentResolver
             val values = ContentValues()
-            val filename = "${System.currentTimeMillis()} image_example"
+            val filename = args.title
 
             values.put(MediaStore.Images.Media.DISPLAY_NAME, filename)
             values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
@@ -173,7 +177,7 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
         }
     }
 
-    companion object {
+    /*companion object {
         private const val HDURL = "hdurl"
         private const val URL = "url"
 
@@ -181,6 +185,6 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
             arguments = bundleOf(HDURL to hdurl, URL to url)
         }
 
-    }
+    }*/
 
 }

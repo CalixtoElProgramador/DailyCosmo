@@ -17,7 +17,7 @@ class APODAdapter(
 ) : RecyclerView.Adapter<BaseViewHolder<*>>() {
 
     interface OnAPODClickListener {
-        fun onAPODClick(apod: APOD)
+        fun onAPODClick(apod: APOD, binding: ItemApodBinding)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
@@ -29,14 +29,16 @@ class APODAdapter(
             val position =
                 holder.bindingAdapterPosition.takeIf { it != DiffUtil.DiffResult.NO_POSITION }
                     ?: return@setOnClickListener
-            itemClickListener.onAPODClick(apodList[position])
+            itemClickListener.onAPODClick(apodList[position], itemBinding)
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         when (holder) {
-            is APODViewHolder -> holder.bind(apodList[position])
+            is APODViewHolder -> {
+                holder.bind(apodList[position])
+            }
         }
     }
 

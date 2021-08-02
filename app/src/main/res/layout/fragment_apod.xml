@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.apod.APODFragment">
 
-<!--    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:liftOnScroll="true">
@@ -20,7 +20,7 @@
             app:menu="@menu/top_app_bar"
             app:title="@string/app_name" />
 
-    </com.google.android.material.appbar.AppBarLayout>-->
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_apod"

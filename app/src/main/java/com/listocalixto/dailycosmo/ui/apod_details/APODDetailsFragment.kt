@@ -3,6 +3,7 @@ package com.listocalixto.dailycosmo.ui.apod_details
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.view.ContextMenu
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.WindowManager
@@ -10,9 +11,12 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navArgs
 import com.bumptech.glide.Glide
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.transition.MaterialContainerTransform
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.databinding.FragmentApodDetailsBinding
 
@@ -29,6 +33,11 @@ class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
 
     private lateinit var binding: FragmentApodDetailsBinding
     private val args by navArgs<APODDetailsFragmentArgs>()
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        //sharedElementEnterTransition = MaterialShapeDrawable()
+    }
 
     /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,12 +92,14 @@ class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
                     Toast.LENGTH_SHORT
                 )
                     .show()
-            } /*else {
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.nav_host_details, APODImageFragment.newInstance(args.hdurl, args.url))
-                    addToBackStack("APODDetailsFragment")
-                }
-            }*/
+            } else {
+                val action = APODDetailsFragmentDirections.actionAPODDetailsFragment2ToAPODImageFragment(
+                    args.hdurl,
+                    args.title,
+                    args.url
+                )
+                findNavController().navigate(action)
+            }
         }
     }
 

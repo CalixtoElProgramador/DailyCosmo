@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBackgroundDetail"
+    android:transitionName="shared_container"
     android:fitsSystemWindows="true"
     tools:context=".ui.apod_details.APODDetailsFragment">
 
@@ -82,6 +83,7 @@
                 android:paddingStart="@dimen/_16sdp"
                 android:paddingEnd="@dimen/_16sdp"
                 android:textAlignment="center"
+                android:textIsSelectable="true"
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 android:textSize="@dimen/_22sdp"
                 android:textStyle="bold"
@@ -101,6 +103,7 @@
                     android:layout_height="wrap_content"
                     android:lineSpacingExtra="@dimen/_8sdp"
                     android:paddingStart="@dimen/_16sdp"
+                    android:textIsSelectable="true"
                     android:paddingTop="@dimen/_40sdp"
                     android:paddingEnd="@dimen/_16sdp"
                     android:paddingBottom="@dimen/_16sdp"
@@ -115,6 +118,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_24sdp"
+                    android:textIsSelectable="true"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     android:textColor="#7d7d7d"

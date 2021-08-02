@@ -9,7 +9,7 @@
         android:id="@+id/APODFragment"
         android:name="com.listocalixto.dailycosmo.ui.apod.APODFragment"
         android:label="fragment_apod"
-        tools:layout="@layout/fragment_apod" >
+        tools:layout="@layout/fragment_apod">
         <action
             android:id="@+id/action_APODFragment_to_APODDetailsFragment2"
             app:destination="@id/APODDetailsFragment2"
@@ -46,13 +46,27 @@
             app:argType="string" />
         <action
             android:id="@+id/action_APODDetailsFragment2_to_APODImageFragment"
-            app:destination="@id/APODImageFragment" />
+            app:destination="@id/APODImageFragment"
+            app:enterAnim="@anim/fade_in_main"
+            app:exitAnim="@anim/fade_out_main"
+            app:popEnterAnim="@anim/fade_in_main"
+            app:popExitAnim="@anim/fade_out_main" />
     </fragment>
     <fragment
         android:id="@+id/APODImageFragment"
         android:name="com.listocalixto.dailycosmo.ui.apod_details.APODImageFragment"
         android:label="fragment_apod_image"
-        tools:layout="@layout/fragment_apod_image" />
+        tools:layout="@layout/fragment_apod_image">
+        <argument
+            android:name="hdurl"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/APODDailyFragment"
         android:name="com.listocalixto.dailycosmo.ui.apod_daily.APODDailyFragment"
