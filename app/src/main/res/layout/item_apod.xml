@@ -41,7 +41,7 @@
                 android:textAlignment="center"
                 android:textSize="@dimen/_8sdp"
                 android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/design_default_color_primary" />
+                android:textColor="@color/colorPrimary" />
 
             <TextView
                 android:id="@+id/title_itemAPOD"
@@ -76,7 +76,7 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_favorite_border"
-                app:tint="@color/design_default_color_primary" />
+                app:tint="@color/colorPrimary" />
 
             <ImageButton
                 android:id="@+id/share_itemAPOD"
@@ -87,7 +87,7 @@
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_share_border"
-                app:tint="@color/design_default_color_primary" />
+                app:tint="@color/colorPrimary" />
 
         </LinearLayout>
 

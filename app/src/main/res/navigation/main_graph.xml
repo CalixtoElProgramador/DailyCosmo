@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/APODDailyFragment">
+
+    <fragment
+        android:id="@+id/APODFragment"
+        android:name="com.listocalixto.dailycosmo.ui.apod.APODFragment"
+        android:label="fragment_apod"
+        tools:layout="@layout/fragment_apod" >
+        <action
+            android:id="@+id/action_APODFragment_to_APODDetailsFragment2"
+            app:destination="@id/APODDetailsFragment2"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/APODDetailsFragment2"
+        android:name="com.listocalixto.dailycosmo.ui.apod_details.APODDetailsFragment"
+        android:label="fragment_apod_details"
+        tools:layout="@layout/fragment_apod_details">
+        <argument
+            android:name="copyright"
+            app:argType="string" />
+        <argument
+            android:name="date"
+            app:argType="string" />
+        <argument
+            android:name="explanation"
+            app:argType="string" />
+        <argument
+            android:name="hdurl"
+            app:argType="string" />
+        <argument
+            android:name="media_type"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="url"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_APODDetailsFragment2_to_APODImageFragment"
+            app:destination="@id/APODImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/APODImageFragment"
+        android:name="com.listocalixto.dailycosmo.ui.apod_details.APODImageFragment"
+        android:label="fragment_apod_image"
+        tools:layout="@layout/fragment_apod_image" />
+    <fragment
+        android:id="@+id/APODDailyFragment"
+        android:name="com.listocalixto.dailycosmo.ui.apod_daily.APODDailyFragment"
+        android:label="fragment_apod_daily"
+        tools:layout="@layout/fragment_apod_daily" />
+</navigation>

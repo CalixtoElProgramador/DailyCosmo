@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
-import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
+import android.view.WindowManager
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -61,25 +63,37 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentApodBinding.bind(view)
+
+        activity?.window?.addFlags((WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS))
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        activity?.window?.statusBarColor = requireActivity().resources.getColor(R.color.colorPrimaryVariant)
+
         layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.rvApod.layoutManager = layoutManager
-
         dataStoreViewModel =
             ViewModelProvider(requireActivity()).get(DataStoreViewModel::class.java)
 
-        getResults(sdf.format(endDate.time), sdf.format(startDate.time))
+        if (!::adapter.isInitialized) {
+            readDataStore()
+            getResults(sdf.format(endDate.time), sdf.format(startDate.time))
+        } else {
+            binding.rvApod.adapter = adapter
+        }
         readDataStore()
 
         binding.rvApod.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy > 0) {
+                    Log.d("RecyclerView", "onScrolled: Primera condición")
                     val visibleItemCount = layoutManager.childCount
                     val pastVisibleItem =
                         layoutManager.findFirstCompletelyVisibleItemPositions(null)
                     val total = adapter.itemCount
                     if (!isLoading) {
+                        Log.d("RecyclerView", "onScrolled: Segunda condición")
                         if ((visibleItemCount + pastVisibleItem[pastVisibleItem.lastIndex]) >= total) {
+                            Log.d("RecyclerView", "onScrolled: Tercera condición")
                             initNewDates()
                             getResults(sdf.format(newEndDate.time), sdf.format(newStartDate.time))
                         }
@@ -90,7 +104,7 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     }
 
     private fun readDataStore() {
-        dataStoreViewModel.readFromDataStore.observe(viewLifecycleOwner, {
+        dataStoreViewModel.readFromDataStore.observe(viewLifecycleOwner, Observer {
             startDate.time = sdf.parse(it)!!
         })
     }
@@ -117,14 +131,15 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
     private fun getResults(end: String, start: String) {
         isLoading = true
         viewModel.fetchAPODResults(end, start)
-            .observe(viewLifecycleOwner, { result ->
+            .observe(viewLifecycleOwner, Observer { result ->
                 when (result) {
                     is Result.Loading -> {
                         if (!::adapter.isInitialized) {
                             binding.pbRvAPOD.visibility = View.VISIBLE
-                            Log.d("ViewModel", "Loading... ")
+                            Log.d("ViewModel", "Loading... Adapter is NOT Initialized")
                             binding.pbMoreResults.visibility = View.GONE
                         } else {
+                            Log.d("ViewModel", "Loading... Adapter is Initialized")
                             binding.pbMoreResults.visibility = View.VISIBLE
                         }
                     }
@@ -133,7 +148,9 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
                             adapter.setData(result.data)
                             binding.pbMoreResults.visibility = View.GONE
                             dataStoreViewModel.saveToDataStore(newStartDate)
+                            Log.d("ViewModel", "Result... Adapter is Initialized")
                         } else {
+                            Log.d("ViewModel", "Result... Adapter is NOT Initialized")
                             binding.pbRvAPOD.visibility = View.GONE
                             adapter = APODAdapter(result.data, this@APODFragment)
                             binding.rvApod.adapter = adapter
@@ -142,14 +159,15 @@ class APODFragment : Fragment(R.layout.fragment_apod), APODAdapter.OnAPODClickLi
                         Log.d("ViewModel", "Results: ${result.data}")
                     }
                     is Result.Failure -> {
-                        Log.d("ViewModel", "${result.exception}")
+                        Toast.makeText(context, "Hubo un error", Toast.LENGTH_SHORT).show()
+                        Log.d("ViewModel", "Error: ${result.exception}")
                     }
                 }
             })
     }
 
     override fun onAPODClick(apod: APOD) {
-        val action = APODFragmentDirections.actionAPODFragmentToAPODDetailsActivity2(
+        val action = APODFragmentDirections.actionAPODFragmentToAPODDetailsFragment2(
             apod.copyright,
             apod.date,
             apod.explanation,

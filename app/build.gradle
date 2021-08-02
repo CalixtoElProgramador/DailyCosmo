@@ -67,14 +67,14 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     //Fragment
-    implementation "androidx.fragment:fragment-ktx:1.4.0-alpha05"
+    implementation "androidx.fragment:fragment-ktx:1.4.0-alpha02"
 
     // Navigation Components
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.0-alpha05"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.0-alpha05"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.4.0-alpha02"
+    implementation "androidx.navigation:navigation-ui-ktx:2.4.0-alpha02"
 
     // Feature module Support
-    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.4.0-alpha05"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.4.0-alpha02"
 
     //LifeCycle
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"

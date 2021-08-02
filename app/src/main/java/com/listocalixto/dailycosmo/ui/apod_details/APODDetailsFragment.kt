@@ -5,25 +5,32 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navArgs
 import com.bumptech.glide.Glide
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.databinding.FragmentApodDetailsBinding
 
 class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
 
-    private lateinit var binding: FragmentApodDetailsBinding
+    /*
     private var copyright: String? = ""
     private var date: String? = ""
     private var explanation: String? = ""
     private var hdurl: String? = ""
     private var mediaType: String? = ""
     private var title: String? = ""
-    private var url: String? = ""
+    private var url: String? = ""*/
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var binding: FragmentApodDetailsBinding
+    private val args by navArgs<APODDetailsFragmentArgs>()
+
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         copyright = requireArguments().getString(COPYRIGHT)
         date = requireArguments().getString(DATE)
@@ -31,33 +38,40 @@ class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
         hdurl = requireArguments().getString(HDURL)
         mediaType = requireArguments().getString(MEDIA_TYPE)
         title = requireArguments().getString(TITLE)
-        url = requireArguments().getString(URL)
-    }
+        url = requireArguments().getString(URL)*/
+
+        /*activity?.window?.addFlags((WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS))
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        activity?.window?.statusBarColor = requireActivity().resources.getColor(R.color.colorSecondaryVariant)
+
+    }*/
 
     @SuppressLint("SetTextI18n", "CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentApodDetailsBinding.bind(view)
 
-        if (hdurl.isNullOrEmpty()) {
-            Glide.with(requireContext()).load(url).into(binding.imgApodPicture)
+        activity?.window?.addFlags((WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS))
+
+        if (args.hdurl.isEmpty()) {
+            Glide.with(requireContext()).load(args.url).into(binding.imgApodPicture)
         } else {
-            Glide.with(requireContext()).load(hdurl).into(binding.imgApodPicture)
+            Glide.with(requireContext()).load(args.hdurl).into(binding.imgApodPicture)
         }
 
-        binding.textApodTitle.text = title
-        binding.textApodDate.text = date
+        binding.textApodTitle.text = args.title
+        binding.textApodDate.text = args.date
 
-        if (explanation.isNullOrEmpty()) {
+        if (args.explanation.isEmpty()) {
             binding.textApodExplanation.text = "No description"
         } else {
-            binding.textApodExplanation.text = explanation
+            binding.textApodExplanation.text = args.explanation
         }
 
-        if (copyright.isNullOrEmpty()) {
+        if (args.copyright.isEmpty()) {
             binding.textApodCopyright.visibility = View.GONE
         } else {
-            binding.textApodCopyright.text = "Copyright: $copyright"
+            binding.textApodCopyright.text = "Copyright: ${args.copyright}"
         }
 
         binding.imgApodPicture.setOnClickListener {
@@ -69,16 +83,16 @@ class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
                     Toast.LENGTH_SHORT
                 )
                     .show()
-            } else {
+            } /*else {
                 requireActivity().supportFragmentManager.commit {
-                    replace(R.id.nav_host_details, APODImageFragment.newInstance(hdurl, url))
+                    replace(R.id.nav_host_details, APODImageFragment.newInstance(args.hdurl, args.url))
                     addToBackStack("APODDetailsFragment")
                 }
-            }
+            }*/
         }
     }
 
-    companion object {
+    /*companion object {
         private const val COPYRIGHT = "copyright"
         private const val DATE = "date"
         private const val EXPLANATION = "explanation"
@@ -106,5 +120,5 @@ class APODDetailsFragment : Fragment(R.layout.fragment_apod_details) {
                 URL to url
             )
         }
-    }
+    }*/
 }

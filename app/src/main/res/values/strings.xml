@@ -4,7 +4,7 @@
     <string name="favorite">favorite</string>
     <string name="content_description_favorite">This icon redirects to the favorites fragment</string>
     <string name="content_description_search">This icon shows the search bar to locate an object.</string>
-    <string name="search">search</string>
+    <string name="search">Search</string>
     <string name="more">more</string>
     <string name="content_description_about_of">This option redirects you to the activity to learn about the application and the developer.</string>
     <string name="about_of">About of</string>
@@ -24,4 +24,6 @@
     <string name="calendar">Calendar</string>
     <string name="content_description_share" />
     <string name="share">Share</string>
+    <string name="today">Today</string>
+    <string name="explore">Explore</string>
 </resources>

@@ -8,27 +8,9 @@ import com.listocalixto.dailycosmo.R
 
 class APODDetailsActivity : AppCompatActivity() {
 
-    private val args by navArgs<APODDetailsActivityArgs>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_apod_details)
 
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace(
-                R.id.nav_host_details,
-                APODDetailsFragment.newInstance(
-                    args.copyright,
-                    args.date,
-                    args.explanation,
-                    args.hdurl,
-                    args.mediaType,
-                    args.title,
-                    args.url
-                )
-            )
-            disallowAddToBackStack()
-        }
     }
 }

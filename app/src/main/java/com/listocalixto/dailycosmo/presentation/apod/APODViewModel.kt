@@ -12,13 +12,8 @@ class APODViewModel(private val repo: APODRepository) : ViewModel() {
 
     fun fetchAPODResults(endDate: String, startDate: String) = liveData(Dispatchers.IO) {
         emit(Result.Loading())
-
         try {
-            emit(
-                Result.Success(
-                    repo.getResults(endDate, startDate)
-                )
-            )
+            emit(Result.Success(repo.getResults(endDate, startDate)))
         } catch (e: Exception) {
             emit(Result.Failure(e))
         }
