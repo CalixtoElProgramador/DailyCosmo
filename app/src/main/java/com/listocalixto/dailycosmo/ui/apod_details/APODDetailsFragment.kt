@@ -1,22 +1,15 @@
 package com.listocalixto.dailycosmo.ui.apod_details
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.ContextMenu
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
-import androidx.fragment.app.commit
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navArgs
 import com.bumptech.glide.Glide
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.transition.MaterialContainerTransform
 import com.listocalixto.dailycosmo.R
 import com.listocalixto.dailycosmo.databinding.FragmentApodDetailsBinding
 

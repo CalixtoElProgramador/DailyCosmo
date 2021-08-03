@@ -71,5 +71,11 @@
         android:id="@+id/APODDailyFragment"
         android:name="com.listocalixto.dailycosmo.ui.apod_daily.APODDailyFragment"
         android:label="fragment_apod_daily"
-        tools:layout="@layout/fragment_apod_daily" />
+        tools:layout="@layout/fragment_apod_daily" >
+        <action
+            android:id="@+id/action_APODDailyFragment_to_APODImageFragment"
+            app:destination="@id/APODImageFragment"
+            app:enterAnim="@anim/fade_in_main"
+            app:exitAnim="@anim/fade_out_main" />
+    </fragment>
 </navigation>
