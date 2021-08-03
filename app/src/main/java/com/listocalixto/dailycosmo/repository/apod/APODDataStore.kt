@@ -16,7 +16,8 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-const val PREFERENCE_NAME = "preferences_01"
+const val STORE_LAST_DATE = "preferences_01"
+const val STORE_LIST_SIZE = "preferences_02"
 
 @SuppressLint("SimpleDateFormat")
 private val sdf = SimpleDateFormat("yyyy-MM-dd")
@@ -25,18 +26,23 @@ class APODDataStore(context: Context) {
 
     private object PreferencesKeys {
         val newStartDate = preferencesKey<String>("new_star_date")
+        val sizeList = preferencesKey<Int>("size_list")
     }
 
-    private val dataStore: DataStore<Preferences> = context.createDataStore(name = PREFERENCE_NAME)
+    private val storeLastDate: DataStore<Preferences> =
+        context.createDataStore(name = STORE_LAST_DATE)
+    private val storeListSize: DataStore<Preferences> =
+        context.createDataStore(name = STORE_LIST_SIZE)
 
-    suspend fun saveToDataStore(newStarDate: Calendar) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.newStartDate] = sdf.format(newStarDate.time)
+    // STORE LAST DATE //
+    suspend fun saveLastDateToDataStore(newStarDate: String) {
+        storeLastDate.edit { preferences ->
+            preferences[PreferencesKeys.newStartDate] = newStarDate
         }
-        Log.d("DataStore", "Se ha guardado la fecha: ${sdf.format(newStarDate.time)}")
+        Log.d("DataStore", "The date has been saved: $newStarDate")
     }
 
-    val readFromDataStore: Flow<String> = dataStore.data
+    val readLastDateFromDataStore: Flow<String> = storeLastDate.data
         .catch { exception ->
             if (exception is IOException) {
                 Log.d("DataStore", exception.message.toString())
@@ -57,8 +63,30 @@ class APODDataStore(context: Context) {
             }
             val newStartDate =
                 preferences[PreferencesKeys.newStartDate] ?: sdf.format(startDate.time)
-            Log.d("DataStore", "Se está leyendo la fecha: $newStartDate")
+            Log.d("DataStore", "The date is being read: $newStartDate")
             newStartDate
         }
 
+    //STORE LIST SIZE //
+    suspend fun saveNewListSizeToDataStore(size: Int) {
+        storeListSize.edit { preferences ->
+            preferences[PreferencesKeys.sizeList] = size
+        }
+        Log.d("DataStore", "The new list size is: $size")
+    }
+
+    val readListSizeFromDataStore: Flow<Int> = storeListSize.data
+        .catch { exception ->
+            if (exception is IOException) {
+                Log.d("DataStore", exception.message.toString())
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            val sizeList = preferences[PreferencesKeys.sizeList] ?: 10
+            Log.d("DataStore", "The size of the list is: $sizeList")
+            sizeList
+        }
 }

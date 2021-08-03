@@ -26,4 +26,5 @@
     <string name="share">Share</string>
     <string name="today">Today</string>
     <string name="explore">Explore</string>
+    <string name="wait_for_the_image_to_load">Wait for the image to load</string>
 </resources>

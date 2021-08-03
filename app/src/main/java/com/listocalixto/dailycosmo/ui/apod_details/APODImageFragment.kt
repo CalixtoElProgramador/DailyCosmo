@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -19,7 +20,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.BitmapDrawableDecoder
 import com.listocalixto.dailycosmo.R
+import com.listocalixto.dailycosmo.data.model.APOD
 import com.listocalixto.dailycosmo.databinding.FragmentApodImageBinding
 import java.io.*
 
@@ -72,7 +75,7 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
     }
 
     private fun checkPermissionsStorage() {
-        if (Build.VERSION.SDK_INT < -Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ActivityCompat.checkSelfPermission(
                         requireContext(),
@@ -83,7 +86,7 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
                 } else {
                     ActivityCompat.requestPermissions(
                         requireActivity(),
-                        (android.Manifest.permission.WRITE_EXTERNAL_STORAGE) as Array<out String>,
+                        (arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)),
                         REQUEST_PERMISSION_WRITE_STORAGE
                     )
                 }
@@ -142,7 +145,7 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
             val imagePath: String =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                     .toString()
-            val filename = "${System.currentTimeMillis()}.jpg"
+            val filename = "${args.title}.jpg"
 
             file = File(imagePath, filename)
 
@@ -166,11 +169,11 @@ class APODImageFragment : Fragment(R.layout.fragment_apod_image) {
                 e.printStackTrace()
             }
         }
-        file?.let {
-            //APIs menor a la 29
+
+        if (file != null) {
             MediaScannerConnection.scanFile(
                 requireContext(),
-                it.toString() as Array<out String>,
+                arrayOf(file.toString()),
                 null,
                 null
             )
